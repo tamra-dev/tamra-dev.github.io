@@ -1,239 +1,807 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tamra — the tamper-evident evidence ledger for AI agents</title>
-  <meta name="description" content="Tamra is a fully open, self-hosted evidence ledger for AI agents. Tamper-evident audit trails and compliance evidence (EU AI Act Article 12) for Spring Boot and Spring AI. Your database, your keys, no API key.">
-  <meta property="og:title" content="Tamra — the tamper-evident evidence ledger for AI agents">
-  <meta property="og:description" content="Self-hosted, cryptographically verifiable audit trails for AI agents. A copper plate for your agent.">
-  <meta property="og:url" content="https://tamra.dev">
-  <meta property="og:type" content="website">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #e8e6e1;
-      padding: 2rem;
-      position: relative;
-      overflow-x: hidden;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(200, 127, 66, 0.12), transparent 60%),
-        linear-gradient(180deg, #0d1420 0%, #0f1626 50%, #0c111b 100%);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tamra — prove what your AI agent actually did</title>
+<meta name="description" content="Tamper-evident, self-hosted evidence ledger for AI agents. Hash-chained audit trails and EU AI Act Article 12 evidence for Spring Boot and Spring AI. Your database, your keys, no API key.">
+<link rel="canonical" href="https://tamra.dev/">
+<meta name="theme-color" content="#0d1420" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d1420'/%3E%3Crect x='5' y='6' width='22' height='7' rx='2' fill='none' stroke='%23c87f42' stroke-width='2'/%3E%3Crect x='5' y='19' width='22' height='7' rx='2' fill='none' stroke='%23c87f42' stroke-width='2'/%3E%3Cpath d='M16 13v6' stroke='%23c87f42' stroke-width='2'/%3E%3C/svg%3E">
+
+<meta property="og:site_name" content="Tamra">
+<meta property="og:title" content="Tamra — prove what your AI agent actually did">
+<meta property="og:description" content="Self-hosted, cryptographically verifiable audit trails for AI agents. Hash-chained, signed, and verifiable offline by anyone.">
+<meta property="og:url" content="https://tamra.dev/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://tamra.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Tamra — the tamper-evident evidence ledger for AI agents, shown as a chain of hash-linked ledger blocks.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tamra — prove what your AI agent actually did">
+<meta name="twitter:description" content="Self-hosted, cryptographically verifiable audit trails for AI agents. Hash-chained, signed, and verifiable offline by anyone.">
+<meta name="twitter:image" content="https://tamra.dev/og.png">
+
+<script>
+  /* set theme before first paint so there is no flash of the wrong theme */
+  (function () {
+    try {
+      var saved = localStorage.getItem('tamra-theme');
+      if (saved === 'light' || saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    } catch (e) {}
+  })();
+</script>
+
+<style>
+  :root {
+    --bg:            #f7f3ec;
+    --bg-2:          #f1eae0;
+    --surface:       #fffdf9;
+    --surface-2:     #faf6ef;
+    --code-bg:       #14100c;
+    --code-text:     #e6ded2;
+    --border:        rgba(156, 90, 38, 0.20);
+    --border-soft:   rgba(60, 50, 40, 0.13);
+    --text:          #1d1a16;
+    --text-2:        #4a443c;
+    --text-3:        #6b6459;
+    --copper:        #9c5a26;
+    --copper-hover:  #834a1d;
+    --copper-ink:    #8a4e1f;
+    --on-copper:     #fffaf4;
+    --copper-wash:   rgba(156, 90, 38, 0.06);
+    --green:         #1f7a3f;
+    --red:           #b3261e;
+    --grid:          rgba(120, 90, 60, 0.075);
+    --glow:          rgba(200, 127, 66, 0.10);
+    --shadow:        0 1px 2px rgba(60,40,20,.05), 0 12px 32px rgba(60,40,20,.07);
+    --chain-stroke:  rgba(156, 90, 38, 0.34);
+    --chain-fill:    rgba(156, 90, 38, 0.05);
+    --chain-hash:    rgba(140, 82, 34, 0.75);
+    --chain-label:   rgba(90, 80, 70, 0.60);
+  }
+  :root[data-theme="dark"] {
+    --bg:            #0d1420;
+    --bg-2:          #0f1626;
+    --surface:       rgba(19, 26, 41, 0.62);
+    --surface-2:     rgba(23, 31, 47, 0.72);
+    --code-bg:       #080d16;
+    --code-text:     #dfe4ec;
+    --border:        rgba(200, 127, 66, 0.18);
+    --border-soft:   rgba(140, 160, 190, 0.14);
+    --text:          #eceae5;
+    --text-2:        #a8b0bf;
+    --text-3:        #8b93a3;
+    --copper:        #c87f42;
+    --copper-hover:  #dd934f;
+    --copper-ink:    #d99a5f;
+    --on-copper:     #17130d;
+    --copper-wash:   rgba(200, 127, 66, 0.07);
+    --green:         #7fd18f;
+    --red:           #e07a72;
+    --grid:          rgba(120, 140, 180, 0.055);
+    --glow:          rgba(200, 127, 66, 0.13);
+    --shadow:        0 20px 60px rgba(0, 0, 0, 0.45);
+    --chain-stroke:  rgba(200, 127, 66, 0.30);
+    --chain-fill:    rgba(200, 127, 66, 0.05);
+    --chain-hash:    rgba(200, 150, 100, 0.62);
+    --chain-label:   rgba(140, 150, 170, 0.55);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      --bg:            #0d1420;
+      --bg-2:          #0f1626;
+      --surface:       rgba(19, 26, 41, 0.62);
+      --surface-2:     rgba(23, 31, 47, 0.72);
+      --code-bg:       #080d16;
+      --code-text:     #dfe4ec;
+      --border:        rgba(200, 127, 66, 0.18);
+      --border-soft:   rgba(140, 160, 190, 0.14);
+      --text:          #eceae5;
+      --text-2:        #a8b0bf;
+      --text-3:        #8b93a3;
+      --copper:        #c87f42;
+      --copper-hover:  #dd934f;
+      --copper-ink:    #d99a5f;
+      --on-copper:     #17130d;
+      --copper-wash:   rgba(200, 127, 66, 0.07);
+      --green:         #7fd18f;
+      --red:           #e07a72;
+      --grid:          rgba(120, 140, 180, 0.055);
+      --glow:          rgba(200, 127, 66, 0.13);
+      --shadow:        0 20px 60px rgba(0, 0, 0, 0.45);
+      --chain-stroke:  rgba(200, 127, 66, 0.30);
+      --chain-fill:    rgba(200, 127, 66, 0.05);
+      --chain-hash:    rgba(200, 150, 100, 0.62);
+      --chain-label:   rgba(140, 150, 170, 0.55);
     }
-    /* engineering grid */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(120, 140, 180, 0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(120, 140, 180, 0.055) 1px, transparent 1px);
-      background-size: 44px 44px;
-      mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, black 40%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, black 40%, transparent 100%);
-      pointer-events: none;
-    }
-    /* hash-chain layer */
-    .chain {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      opacity: 0.5;
-    }
-    main {
-      max-width: 660px;
-      text-align: center;
-      position: relative;
-      z-index: 2;
-      background: rgba(13, 18, 30, 0.55);
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
-      border: 1px solid rgba(200, 127, 66, 0.14);
-      border-radius: 16px;
-      padding: 3rem 2.5rem;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-    }
-    .plate {
-      display: inline-block;
-      font-size: 0.78rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: #d99a5f;
-      border: 1px solid #5a4632;
-      border-radius: 999px;
-      padding: 0.4rem 1rem;
-      margin-bottom: 1.6rem;
-      background: rgba(200, 127, 66, 0.07);
-    }
-    h1 {
-      font-size: clamp(2.4rem, 7vw, 3.6rem);
-      letter-spacing: -0.02em;
-      color: #f3ede4;
-    }
-    h1 .cursor {
-      display: inline-block;
-      width: 0.55ch;
-      color: #c87f42;
-      animation: blink 1.2s steps(1) infinite;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
-    .tagline {
-      margin-top: 1rem;
-      font-size: clamp(1.02rem, 3vw, 1.25rem);
-      color: #bcb7ae;
-      line-height: 1.55;
-    }
-    .hashline {
-      margin-top: 1.4rem;
-      font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
-      font-size: 0.78rem;
-      color: #6f7d96;
-      letter-spacing: 0.02em;
-      word-break: break-all;
-    }
-    .hashline .ok { color: #7fb98a; }
-    .story {
-      margin-top: 1.5rem;
-      font-size: 0.97rem;
-      color: #92938d;
-      line-height: 1.65;
-    }
-    .cta {
-      margin-top: 2.1rem;
-      display: inline-block;
-      background: #c87f42;
-      color: #17130d;
-      font-weight: 600;
-      text-decoration: none;
-      padding: 0.78rem 1.6rem;
-      border-radius: 8px;
-      transition: background 0.15s ease;
-    }
-    .cta:hover { background: #dd934f; }
-    footer {
-      margin-top: 2.4rem;
-      font-size: 0.84rem;
-      color: #6e6a63;
-    }
-  </style>
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; }
+  .narrow { max-width: 760px; }
+  section { padding: 5.5rem 0; position: relative; }
+  section + section { border-top: 1px solid var(--border-soft); }
+  a { color: var(--copper-ink); }
+
+  h2 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    letter-spacing: -0.022em;
+    line-height: 1.2;
+    color: var(--text);
+  }
+  h3 { font-size: 1.06rem; letter-spacing: -0.01em; color: var(--text); }
+  .eyebrow {
+    font-size: 0.74rem;
+    letter-spacing: 0.19em;
+    text-transform: uppercase;
+    color: var(--copper-ink);
+    font-weight: 600;
+    margin-bottom: 0.85rem;
+  }
+  .lede { margin-top: 1rem; font-size: 1.06rem; color: var(--text-2); max-width: 62ch; }
+
+  /* ---------- nav ---------- */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .nav { display: flex; align-items: center; gap: 1rem; height: 60px; }
+  .brand {
+    font-weight: 700; font-size: 1.16rem; letter-spacing: -0.02em;
+    color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .brand svg { width: 21px; height: 21px; display: block; }
+  .ver {
+    font-size: 0.7rem; letter-spacing: 0.06em; color: var(--copper-ink);
+    border: 1px solid var(--border); background: var(--copper-wash);
+    padding: 0.16rem 0.5rem; border-radius: 999px; white-space: nowrap;
+  }
+  .nav-links { margin-left: auto; display: flex; align-items: center; gap: 1.5rem; }
+  .nav-links a {
+    color: var(--text-2); text-decoration: none; font-size: 0.9rem;
+  }
+  .nav-links a:hover { color: var(--copper-ink); }
+  .toggle {
+    background: transparent; border: 1px solid var(--border-soft);
+    color: var(--text-2); width: 34px; height: 34px; border-radius: 8px;
+    display: grid; place-items: center; cursor: pointer; flex-shrink: 0;
+  }
+  .toggle:hover { color: var(--copper-ink); border-color: var(--border); }
+  .toggle svg { width: 17px; height: 17px; }
+  .icon-sun { display: none; }
+  :root[data-theme="dark"] .icon-sun { display: block; }
+  :root[data-theme="dark"] .icon-moon { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .icon-sun { display: block; }
+    :root:not([data-theme]) .icon-moon { display: none; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 5rem 0 5.5rem; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% -8%, var(--glow), transparent 62%),
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 44px 44px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 44px 44px;
+    mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 35%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 35%, transparent 100%);
+  }
+  .hero .wrap { position: relative; z-index: 1; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.76rem; letter-spacing: 0.13em; text-transform: uppercase; font-weight: 600;
+    color: var(--copper-ink); border: 1px solid var(--border);
+    border-radius: 999px; padding: 0.38rem 0.9rem; background: var(--copper-wash);
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  h1 {
+    margin-top: 1.5rem;
+    font-size: clamp(2.3rem, 6.2vw, 4rem);
+    line-height: 1.06; letter-spacing: -0.035em; color: var(--text);
+    max-width: 17ch;
+  }
+  h1 em { font-style: normal; color: var(--copper-ink); }
+  .sub { margin-top: 1.4rem; font-size: clamp(1.05rem, 2.4vw, 1.25rem); color: var(--text-2); max-width: 56ch; }
+  .kicker { margin-top: 0.9rem; font-size: 0.98rem; color: var(--text-3); max-width: 56ch; }
+  .btns { margin-top: 2.2rem; display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-weight: 600; font-size: 0.95rem; text-decoration: none;
+    padding: 0.72rem 1.4rem; border-radius: 9px; transition: background .15s, border-color .15s;
+  }
+  .btn-primary { background: var(--copper); color: var(--on-copper); border: 1px solid var(--copper); }
+  .btn-primary:hover { background: var(--copper-hover); border-color: var(--copper-hover); }
+  .btn-ghost { border: 1px solid var(--border); color: var(--text); background: var(--surface-2); }
+  .btn-ghost:hover { border-color: var(--copper); color: var(--copper-ink); }
+  .btn:focus-visible, .toggle:focus-visible, .copy:focus-visible, a:focus-visible {
+    outline: 2px solid var(--copper); outline-offset: 3px; border-radius: 4px;
+  }
+  .trust {
+    margin-top: 2.4rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+    font-size: 0.83rem; color: var(--text-3);
+  }
+  .trust span { display: inline-flex; align-items: center; gap: 0.42rem; }
+  .trust svg { width: 13px; height: 13px; color: var(--green); flex-shrink: 0; }
+
+  .chainwrap { margin-top: 3.2rem; overflow-x: auto; padding-bottom: 0.5rem; }
+  .chainwrap svg { display: block; min-width: 720px; width: 100%; height: auto; }
+  .cb-box { fill: var(--chain-fill); stroke: var(--chain-stroke); }
+  .cb-rule { stroke: var(--chain-stroke); opacity: .55; }
+  .cb-l { font: 600 9.5px ui-monospace, Menlo, Consolas, monospace; fill: var(--chain-label); letter-spacing: .07em; }
+  .cb-p { font: 10px ui-monospace, Menlo, Consolas, monospace; fill: var(--chain-label); }
+  .cb-h { font: 10px ui-monospace, Menlo, Consolas, monospace; fill: var(--chain-hash); }
+  .cb-link { stroke: var(--chain-stroke); stroke-width: 1.2; fill: none; }
+  .cb-cap { font: 10px ui-monospace, Menlo, Consolas, monospace; fill: var(--text-3); }
+
+  /* ---------- generic cards ---------- */
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; margin-top: 2.6rem; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4rem; align-items: center; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border-soft);
+    border-radius: 13px; padding: 1.5rem 1.4rem;
+  }
+  .card .num {
+    font-size: 0.72rem; letter-spacing: 0.14em; color: var(--copper-ink);
+    font-weight: 700; margin-bottom: 0.7rem;
+  }
+  .card p { margin-top: 0.55rem; font-size: 0.93rem; color: var(--text-2); }
+  .card .ico { width: 22px; height: 22px; color: var(--copper-ink); margin-bottom: 0.85rem; display: block; }
+
+  /* ---------- code ---------- */
+  .code {
+    position: relative; margin-top: 1.1rem;
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 11px; overflow: hidden;
+  }
+  .code-head {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.6rem 0.9rem; border-bottom: 1px solid rgba(255,255,255,.07);
+    font-size: 0.74rem; letter-spacing: 0.09em; text-transform: uppercase;
+    color: rgba(200,160,120,.8);
+  }
+  .code pre {
+    margin: 0; padding: 1.05rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.83rem; line-height: 1.65; color: var(--code-text);
+  }
+  .copy {
+    margin-left: auto; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+    color: rgba(230,222,210,.9); font-size: 0.7rem; letter-spacing: .06em; text-transform: uppercase;
+    padding: 0.25rem 0.6rem; border-radius: 6px; cursor: pointer; font-family: inherit;
+  }
+  .copy:hover { background: rgba(255,255,255,.13); }
+  .c-key { color: #d99a5f; }
+  .c-str { color: #93c9a1; }
+  .c-com { color: #7a8496; }
+  .c-tag { color: #a8b6cf; }
+  .c-ok  { color: #7fd18f; }
+  .c-bad { color: #e8837a; }
+  .c-dim { color: #8b93a3; }
+
+  /* ---------- steps ---------- */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; margin-top: 2.6rem; }
+  .step { position: relative; background: var(--surface); border: 1px solid var(--border-soft); border-radius: 13px; padding: 1.6rem 1.4rem; }
+  .step .n {
+    width: 27px; height: 27px; border-radius: 7px; display: grid; place-items: center;
+    background: var(--copper); color: var(--on-copper); font-size: 0.8rem; font-weight: 700;
+    margin-bottom: 0.9rem;
+  }
+  .step p { margin-top: 0.5rem; font-size: 0.93rem; color: var(--text-2); }
+  .step .meta { margin-top: 0.9rem; font-size: 0.78rem; color: var(--text-3); }
+
+  /* ---------- why / plate ---------- */
+  .plate-visual {
+    border: 1px solid var(--border); border-radius: 14px; padding: 1.6rem;
+    background: linear-gradient(150deg, var(--copper-wash), transparent 70%), var(--surface);
+  }
+  .plate-visual svg { width: 100%; height: auto; display: block; }
+  .pull {
+    margin-top: 1.6rem; padding: 1.1rem 1.3rem;
+    border-left: 3px solid var(--copper); background: var(--copper-wash);
+    border-radius: 0 10px 10px 0; font-size: 1rem; color: var(--text);
+  }
+  .pull code {
+    font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.92em;
+    color: var(--copper-ink); font-weight: 600;
+  }
+
+  /* ---------- table ---------- */
+  .tablewrap { margin-top: 2.2rem; overflow-x: auto; border: 1px solid var(--border-soft); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; min-width: 480px; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.8rem 1.1rem; border-bottom: 1px solid var(--border-soft); }
+  th { font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); font-weight: 600; background: var(--surface-2); }
+  tr:last-child td { border-bottom: 0; }
+  td:first-child { color: var(--text); font-weight: 500; }
+  td { color: var(--text-2); }
+  .badge { font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 5px; white-space: nowrap; }
+  .badge-yes { color: var(--green); background: color-mix(in srgb, var(--green) 12%, transparent); }
+  .badge-no  { color: var(--text-3); background: var(--surface-2); border: 1px solid var(--border-soft); }
+
+  /* ---------- specs strip ---------- */
+  .specs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem; margin-top: 2.4rem; }
+  .spec { border: 1px solid var(--border-soft); border-radius: 11px; padding: 1.1rem; background: var(--surface); }
+  .spec dt { font-size: 0.72rem; letter-spacing: 0.11em; text-transform: uppercase; color: var(--text-3); }
+  .spec dd { margin-top: 0.35rem; font-size: 0.97rem; color: var(--text); font-weight: 600; }
+
+  /* ---------- cta band ---------- */
+  .band { background: var(--surface-2); }
+  .band .wrap { text-align: center; }
+  .band .btns { justify-content: center; }
+  .band .lede { margin-left: auto; margin-right: auto; }
+  .tagline-final {
+    margin-top: 2.2rem; font-size: 0.95rem; color: var(--text-3); font-style: italic;
+  }
+
+  /* ---------- footer ---------- */
+  footer { border-top: 1px solid var(--border-soft); padding: 2.4rem 0; font-size: 0.87rem; color: var(--text-3); }
+  .foot { display: flex; flex-wrap: wrap; gap: 0.8rem 1.6rem; align-items: center; }
+  .foot a { color: var(--text-2); text-decoration: none; }
+  .foot a:hover { color: var(--copper-ink); }
+  .foot .right { margin-left: auto; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 880px) {
+    .grid3, .steps, .specs { grid-template-columns: 1fr 1fr; }
+    .grid2 { grid-template-columns: 1fr; gap: 1.8rem; }
+    section { padding: 4rem 0; }
+  }
+  @media (max-width: 620px) {
+    .grid3, .steps, .specs { grid-template-columns: 1fr; }
+    .nav-links a { display: none; }
+    .nav-links a.gh { display: inline; }
+    .hero { padding: 3.5rem 0 4rem; }
+    h1 { max-width: none; }
+    .btn { width: 100%; justify-content: center; }
+    .btns { gap: 0.6rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
 </head>
 <body>
-  <!-- background hash chain: blocks linked by their hashes -->
-  <svg class="chain" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-    <defs>
-      <g id="block">
-        <rect width="150" height="64" rx="8"
-              fill="rgba(200,127,66,0.05)" stroke="rgba(200,127,66,0.28)" stroke-width="1"/>
-        <line x1="0" y1="24" x2="150" y2="24" stroke="rgba(200,127,66,0.18)" stroke-width="1"/>
-      </g>
-      <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-        <path d="M1 1 L9 5 L1 9" fill="none" stroke="rgba(200,127,66,0.35)" stroke-width="1.4"/>
-      </marker>
-    </defs>
-    <style>
-      .h { font: 11px ui-monospace, Menlo, Consolas, monospace; fill: rgba(200,150,100,0.42); }
-      .l { font: 9px ui-monospace, Menlo, Consolas, monospace; fill: rgba(140,150,170,0.35); letter-spacing: 0.08em; }
-      .link { stroke: rgba(200,127,66,0.30); stroke-width: 1.2; fill: none; marker-end: url(#arr); }
-    </style>
 
-    <!-- upper chain, drifting left-to-right -->
-    <g transform="translate(60,130)">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 4471 · LLM_CALL</text>
-      <text class="h" x="10" y="44">a3f1c9…e8b2</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
-    <g transform="translate(290,130)">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 4472 · TOOL_CALL</text>
-      <text class="h" x="10" y="44">prev: a3f1c9…</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
-    <g transform="translate(520,130)">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 4473 · APPROVAL</text>
-      <text class="h" x="10" y="44">prev: 7bd204…</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
-    <g transform="translate(750,130)">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 4474 · TOOL_CALL</text>
-      <text class="h" x="10" y="44">prev: 91cc4e…</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
-    <g transform="translate(980,130)">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 4475 · LLM_CALL</text>
-      <text class="h" x="10" y="44">prev: f04a71…</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
-    <g transform="translate(1210,130)">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 4476 · RETRIEVAL</text>
-      <text class="h" x="10" y="44">prev: 5e93da…</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="4" y="5" width="24" height="8" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/>
+        <rect x="4" y="19" width="24" height="8" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/>
+        <path d="M16 13v6" stroke="currentColor" stroke-width="2.2"/>
+      </svg>
+      Tamra
+    </a>
+    <span class="ver mono">v0.1.2 · Maven Central</span>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#proof">Tamper demo</a>
+      <a href="#start">Quickstart</a>
+      <a class="gh" href="https://github.com/tamra-dev/tamra-agent-ledger" target="_blank" rel="noopener">GitHub</a>
+      <button class="toggle" id="theme-toggle" type="button" aria-label="Switch between light and dark theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
 
-    <!-- lower chain, offset, fading toward viewer -->
-    <g transform="translate(-40,700)" opacity="0.7">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 8802 · TOOL_CALL</text>
-      <text class="h" x="10" y="44">4c17be…09f3</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
-    <g transform="translate(190,700)" opacity="0.7">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 8803 · LLM_CALL</text>
-      <text class="h" x="10" y="44">prev: 4c17be…</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
-    <g transform="translate(420,700)" opacity="0.7">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 8804 · APPROVAL</text>
-      <text class="h" x="10" y="44">prev: dd61a8…</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
-    <g transform="translate(650,700)" opacity="0.7">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 8805 · TOOL_CALL</text>
-      <text class="h" x="10" y="44">prev: 2b90cf…</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
-    <g transform="translate(880,700)" opacity="0.7">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 8806 · CHECKPOINT ✓</text>
-      <text class="h" x="10" y="44">signed: ed25519</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
-    <g transform="translate(1110,700)" opacity="0.7">
-      <use href="#block"/>
-      <text class="l" x="10" y="16">SEQ 8807 · LLM_CALL</text>
-      <text class="h" x="10" y="44">prev: 88e1fc…</text>
-      <path class="link" d="M150 32 H 230"/>
-    </g>
-  </svg>
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <span class="pill"><span class="dot"></span> v0.1.2 released · Apache 2.0</span>
+    <h1>Prove what your AI agent <em>actually did</em>.</h1>
+    <p class="sub">Tamra is a tamper-evident evidence ledger for AI agents. It seals every LLM call,
+    tool call, and human approval into a cryptographic hash chain you can hand to an auditor —
+    who can verify it offline, without trusting you.</p>
+    <p class="kicker">Self-hosted on your own Postgres. Signed with your own keys.
+    No cloud, no API key, no per-event cost.</p>
 
-  <main>
-    <div class="plate">Coming soon &middot; In active development</div>
-    <h1>Tamra<span class="cursor">_</span></h1>
-    <p class="tagline">The tamper-evident evidence ledger for AI agents.<br>
-    Self-hosted audit trails and compliance evidence for Spring Boot &amp; Spring AI.<br>
-    Your database. Your keys. No API key.</p>
-    <p class="hashline">chain head 4476 &middot; sha-256 5e93da41…c07b &middot; <span class="ok">verify: VALID ✓</span></p>
-    <p class="story">Ancient India sealed its records in copper plates — <em>tamrapatras</em> —
-    that courts still honor a thousand years later. Tamra does the same for your AI agents:
-    every action hash-chained, signed, and verifiable offline by anyone,
-    without trusting the system that produced it.</p>
-    <a class="cta" href="https://github.com/tamra-dev/tamra-agent-ledger">Follow the build on GitHub &rarr;</a>
-    <footer>Apache 2.0 &middot; EU AI Act Article 12 &middot; A copper plate for your agent</footer>
-  </main>
+    <div class="btns">
+      <a class="btn btn-primary" href="#start">Get started in 60 seconds →</a>
+      <a class="btn btn-ghost" href="https://github.com/tamra-dev/tamra-agent-ledger" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.26.8-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.1-.75.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .31.21.68.81.57A12 12 0 0 0 12 .5z"/></svg>
+        Star on GitHub
+      </a>
+    </div>
+
+    <div class="trust">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> One Maven dependency</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> No code changes to your agent</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> ~20µs per call</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> EU AI Act Art. 12, 14 &amp; 19</span>
+    </div>
+
+    <div class="chainwrap">
+      <svg viewBox="0 0 980 132" role="img" aria-label="A chain of four ledger entries. Each entry stores the hash of the entry before it, so entry 4476 is a signed checkpoint whose validity depends on every entry before it.">
+        <g transform="translate(2,14)">
+          <rect class="cb-box" width="196" height="80" rx="9" stroke-width="1"/>
+          <line class="cb-rule" x1="0" y1="27" x2="196" y2="27" stroke-width="1"/>
+          <text class="cb-l" x="13" y="18">SEQ 4473 · APPROVAL</text>
+          <text class="cb-p" x="13" y="47">prev 91cc4e…2d70</text>
+          <text class="cb-h" x="13" y="65">hash f04a71…b6c8</text>
+        </g>
+        <path class="cb-link" d="M200 54 H 250"/>
+        <path class="cb-link" d="M244 49 l6 5 -6 5"/>
+        <g transform="translate(252,14)">
+          <rect class="cb-box" width="196" height="80" rx="9" stroke-width="1"/>
+          <line class="cb-rule" x1="0" y1="27" x2="196" y2="27" stroke-width="1"/>
+          <text class="cb-l" x="13" y="18">SEQ 4474 · TOOL_CALL</text>
+          <text class="cb-p" x="13" y="47">prev f04a71…b6c8</text>
+          <text class="cb-h" x="13" y="65">hash 2af8b1…9e34</text>
+        </g>
+        <path class="cb-link" d="M450 54 H 500"/>
+        <path class="cb-link" d="M494 49 l6 5 -6 5"/>
+        <g transform="translate(502,14)">
+          <rect class="cb-box" width="196" height="80" rx="9" stroke-width="1"/>
+          <line class="cb-rule" x1="0" y1="27" x2="196" y2="27" stroke-width="1"/>
+          <text class="cb-l" x="13" y="18">SEQ 4475 · LLM_CALL</text>
+          <text class="cb-p" x="13" y="47">prev 2af8b1…9e34</text>
+          <text class="cb-h" x="13" y="65">hash c61d07…8a5f</text>
+        </g>
+        <path class="cb-link" d="M700 54 H 750"/>
+        <path class="cb-link" d="M744 49 l6 5 -6 5"/>
+        <g transform="translate(752,14)">
+          <rect class="cb-box" width="196" height="80" rx="9" stroke-width="1.6"/>
+          <line class="cb-rule" x1="0" y1="27" x2="196" y2="27" stroke-width="1"/>
+          <text class="cb-l" x="13" y="18">SEQ 4476 · CHECKPOINT ✓</text>
+          <text class="cb-p" x="13" y="47">prev c61d07…8a5f</text>
+          <text class="cb-h" x="13" y="65">ed25519 5e93da…c07b</text>
+        </g>
+        <text class="cb-cap" x="2" y="126">Every entry seals the one before it. Change any byte and every hash after it stops matching.</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section id="problem">
+  <div class="wrap">
+    <p class="eyebrow">The problem</p>
+    <h2>Your agent logs prove nothing.</h2>
+    <p class="lede">A row in a database is mutable by design. Anyone with write access — an engineer,
+    a script, an attacker — can change what your agent "did" after the fact, and leave no trace.
+    So when it matters most, your logs are just claims.</p>
+
+    <div class="grid3">
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        <h3>A customer disputes a decision</h3>
+        <p>They say your agent promised a refund. You say it didn't. Both of you are pointing at a
+        table that either side could have edited.</p>
+      </div>
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6M9 11h3"/></svg>
+        <h3>A regulator asks for records</h3>
+        <p>EU AI Act Article 12 requires automatic logging over a high-risk system's lifetime.
+        Exporting a CSV proves you have data, not that it's unaltered.</p>
+      </div>
+      <div class="card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        <h3>Something goes wrong at 3am</h3>
+        <p>You need to know exactly which tool the agent called, with what arguments, and whether a
+        human approved it — and you need that answer to hold up later.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY THE NAME (the bridge) ============ -->
+<section id="why">
+  <div class="wrap">
+    <div class="grid2">
+      <div>
+        <p class="eyebrow">Why it's called Tamra</p>
+        <h2>India solved this problem a thousand years ago.</h2>
+        <p class="lede">When an ancient Indian king granted land, the record wasn't written on
+        palm leaf — it was engraved into <strong>copper plates</strong> called
+        <em>tamrapatras</em> (<span class="mono">tamra</span> = copper, <span class="mono">patra</span> = document).</p>
+        <p class="lede">Copper was chosen for one reason: <strong>you cannot quietly change it.</strong>
+        It doesn't rot, and re-engraving leaves scars anyone can see. Plates were often riveted
+        together under a seal, so no page could be added or removed. If a claim was ever challenged,
+        the holder produced the plate.</p>
+        <p class="lede">A thousand years on — long after the issuing kingdom ceased to exist — those
+        plates are still legible, and still carry the evidence of whether anyone tampered with them.
+        The kingdom's authority expired. The record's didn't.</p>
+        <p class="lede">That's the whole idea behind Tamra: evidence that outlives the trust you
+        placed in whoever produced it. We just swapped the copper for a hash chain.</p>
+
+        <div class="pull">
+          And it's not only a metaphor — the evidence bundle Tamra exports for your auditor
+          is literally a <code>.tamrapatra</code> file.
+        </div>
+      </div>
+
+      <div class="plate-visual">
+        <svg viewBox="0 0 340 240" role="img" aria-label="Left: an engraved copper plate with a rivet and seal. Right: a digital ledger entry with a hash and Ed25519 signature. Both are labelled 'cannot be silently altered'.">
+          <defs>
+            <linearGradient id="cu" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#c87f42" stop-opacity=".30"/>
+              <stop offset="100%" stop-color="#8a4e1f" stop-opacity=".16"/>
+            </linearGradient>
+          </defs>
+          <!-- copper plate -->
+          <g transform="translate(14,26)">
+            <rect width="132" height="150" rx="7" fill="url(#cu)" stroke="var(--chain-stroke)" stroke-width="1.4"/>
+            <circle cx="66" cy="17" r="5.5" fill="none" stroke="var(--chain-stroke)" stroke-width="1.4"/>
+            <g stroke="var(--chain-hash)" stroke-width="1.5" stroke-linecap="round" opacity=".75">
+              <path d="M18 42h96M18 55h96M18 68h72M18 81h96M18 94h58M18 107h96M18 120h80"/>
+            </g>
+            <text x="66" y="146" text-anchor="middle" class="cb-l">c. 1100 CE</text>
+          </g>
+          <text x="80" y="200" text-anchor="middle" class="cb-l">COPPER PLATE</text>
+          <text x="80" y="216" text-anchor="middle" class="cb-p">engraving leaves scars</text>
+
+          <!-- equals -->
+          <g stroke="var(--chain-stroke)" stroke-width="1.6" stroke-linecap="round">
+            <path d="M162 96h16M162 106h16"/>
+          </g>
+
+          <!-- digital entry -->
+          <g transform="translate(194,26)">
+            <rect width="132" height="150" rx="7" fill="var(--chain-fill)" stroke="var(--chain-stroke)" stroke-width="1.4"/>
+            <line x1="0" y1="30" x2="132" y2="30" stroke="var(--chain-stroke)" stroke-width="1" opacity=".55"/>
+            <text x="12" y="20" class="cb-l">SEQ 4476</text>
+            <text x="12" y="50" class="cb-p">prev  c61d07…</text>
+            <text x="12" y="68" class="cb-h">hash  5e93da…</text>
+            <text x="12" y="94" class="cb-p">ed25519 signed</text>
+            <g stroke="var(--chain-stroke)" stroke-width="1.4" fill="none">
+              <rect x="12" y="106" width="108" height="1" opacity=".4"/>
+            </g>
+            <text x="12" y="128" class="cb-h">.tamrapatra</text>
+            <text x="66" y="146" text-anchor="middle" class="cb-l">2026 CE</text>
+          </g>
+          <text x="260" y="200" text-anchor="middle" class="cb-l">HASH CHAIN</text>
+          <text x="260" y="216" text-anchor="middle" class="cb-p">edits break the chain</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section id="how">
+  <div class="wrap">
+    <p class="eyebrow">How it works</p>
+    <h2>Capture. Seal. Prove.</h2>
+    <p class="lede">Three moving parts, and you only ever touch the first one.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="n">1</div>
+        <h3>Capture</h3>
+        <p>A Spring AI advisor records every <span class="mono">LLM_CALL</span> and
+        <span class="mono">TOOL_CALL</span> automatically — no changes to your agent code.
+        Human sign-offs go in through the <span class="mono">HumanApprovalRecorder</span> API.</p>
+        <p class="meta">~20µs on the calling thread. Writes happen on a background thread.</p>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <h3>Seal</h3>
+        <p>Each event is canonicalised (RFC 8785), hashed with SHA-256, and linked to the hash of the
+        event before it. Every hour, the chain head is signed with an Ed25519 key that never leaves
+        your infrastructure.</p>
+        <p class="meta">Append-only Postgres table, guarded by database triggers.</p>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <h3>Prove</h3>
+        <p>Export a date range as a signed <span class="mono">.tamrapatra</span> bundle: events,
+        checkpoints, your public key, compliance mappings, and an HTML report. Your auditor verifies
+        it on their own laptop.</p>
+        <p class="meta">Offline verification needs nothing but OpenSSL.</p>
+      </div>
+    </div>
+
+    <p class="lede" style="margin-top:2rem">
+      By default Tamra stores <strong>hashes only</strong> — not your raw prompts or tool arguments.
+      You can prove an event happened and hasn't changed without the ledger ever holding sensitive
+      content. Turn on <span class="mono">full-payload</span> when you need the text itself.
+    </p>
+  </div>
+</section>
+
+<!-- ============ TAMPER DEMO ============ -->
+<section id="proof">
+  <div class="wrap narrow">
+    <p class="eyebrow">See it catch a tamper</p>
+    <h2>Edit the database directly. Tamra still notices.</h2>
+    <p class="lede">This is the part that matters. Someone with full database access changes one
+    event — exactly the scenario ordinary logs can't survive. Here's what happens next.</p>
+
+    <div class="code">
+      <div class="code-head"><span>a real 500-event ledger</span>
+        <button class="copy" type="button">Copy</button>
+      </div>
+      <pre><span class="c-dim">$</span> tamra verify
+<span class="c-ok">✓ Chain VALID</span>
+  <span class="c-dim">events:</span>        500
+  <span class="c-dim">head sequence:</span> 499
+  <span class="c-dim">head hash:</span>     834b6373a932008ea91524fd928b88348f5c96fd4dcf9935bbb7bea76b9a5119
+
+<span class="c-com"># tamper with event #250 as a Postgres superuser — past the append-only trigger</span>
+
+<span class="c-dim">$</span> tamra verify
+<span class="c-bad">✗ Chain BROKEN at sequence 250</span>
+  <span class="c-dim">reason:</span> content hash mismatch: the event has been modified since it was sealed</pre>
+    </div>
+
+    <p class="lede">No diff tool, no backup to compare against — the ledger detects its own wound and
+    names the exact sequence where it happened. To hide the edit, a tamperer would have to recompute
+    every hash from 250 onward <em>and</em> forge an Ed25519 signature with a key that never left your
+    infrastructure.</p>
+    <p class="lede"><span class="mono">verify</span> exits <span class="mono">0</span> when the chain
+    is clean and <span class="mono">1</span> on a break — so you can wire it into CI or a cron job and
+    get paged the moment a record changes.</p>
+  </div>
+</section>
+
+<!-- ============ QUICKSTART ============ -->
+<section id="start">
+  <div class="wrap narrow">
+    <p class="eyebrow">Quickstart</p>
+    <h2>One dependency. No code changes.</h2>
+    <p class="lede">If you're on Spring Boot 3.4 and Spring AI 1.0, capture starts the moment
+    the app boots.</p>
+
+    <div class="code">
+      <div class="code-head"><span>pom.xml</span><button class="copy" type="button">Copy</button></div>
+      <pre><span class="c-tag">&lt;dependency&gt;</span>
+  <span class="c-tag">&lt;groupId&gt;</span>dev.tamra<span class="c-tag">&lt;/groupId&gt;</span>
+  <span class="c-tag">&lt;artifactId&gt;</span>tamra-spring-boot-starter<span class="c-tag">&lt;/artifactId&gt;</span>
+  <span class="c-tag">&lt;version&gt;</span>0.1.2<span class="c-tag">&lt;/version&gt;</span>
+<span class="c-tag">&lt;/dependency&gt;</span></pre>
+    </div>
+
+    <div class="code">
+      <div class="code-head"><span>application.yml</span><button class="copy" type="button">Copy</button></div>
+      <pre><span class="c-key">tamra:</span>
+  <span class="c-key">keystore:</span>
+    <span class="c-key">path:</span> .tamra/keystore     <span class="c-com"># your Ed25519 signing key</span>
+  <span class="c-key">capture:</span>
+    <span class="c-key">full-payload:</span> <span class="c-str">false</span>      <span class="c-com"># hash-only by default — keeps prompts out of the ledger</span>
+  <span class="c-key">checkpoint:</span>
+    <span class="c-key">interval:</span> <span class="c-str">1h</span></pre>
+    </div>
+
+    <div class="code">
+      <div class="code-head"><span>terminal</span><button class="copy" type="button">Copy</button></div>
+      <pre><span class="c-com"># the CLI ships as a signed jar; alias it for readability</span>
+<span class="c-dim">$</span> alias tamra=<span class="c-str">'java -jar tamra.jar'</span>
+
+<span class="c-com"># 1. generate the signing key you control</span>
+<span class="c-dim">$</span> tamra keygen --keystore .tamra/keystore
+
+<span class="c-com"># 2. run your agent as usual — events are captured automatically</span>
+
+<span class="c-com"># 3. export a signed evidence bundle for a date range</span>
+<span class="c-dim">$</span> tamra export --from 2020-01-01 --to 2035-01-01 --edict eu-ai-act \
+    --out my-evidence.tamrapatra --keystore .tamra/keystore
+<span class="c-ok">✓ Wrote my-evidence.tamrapatra</span>
+  <span class="c-dim">events:</span>   500 (sequence 0 to 499)
+  <span class="c-dim">edict:</span>    eu-ai-act v0.1
+  <span class="c-dim">signed:</span>   checkpoint over the segment head (Ed25519)
+
+<span class="c-com"># 4. anyone can verify it offline — no database, no Tamra server</span>
+<span class="c-dim">$</span> tamra verify --bundle my-evidence.tamrapatra
+<span class="c-ok">✓ Signatures verified (Ed25519)</span>
+  <span class="c-dim">edict:</span>      eu-ai-act v0.1 (EU AI Act)
+  <span class="c-dim">signer key:</span> 2095…d69a  <span class="c-com"># compare against the operator's key out of band</span>
+<span class="c-ok">✓ Chain VALID</span>  <span class="c-dim">— 500 events, head sequence 499</span></pre>
+    </div>
+
+    <div class="btns">
+      <a class="btn btn-primary" href="https://github.com/tamra-dev/tamra-agent-ledger#readme" target="_blank" rel="noopener">Read the full docs →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HONEST ROADMAP ============ -->
+<section id="scope">
+  <div class="wrap">
+    <p class="eyebrow">Scope</p>
+    <h2>What works today — and what doesn't.</h2>
+    <p class="lede">v0.1.2 is an early open release, and the MVP is deliberately narrow:
+    one framework, one database, one regulation. Here's exactly where the edges are.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Area</th><th>Today</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Frameworks</td><td>Spring Boot 3.4.x + Spring AI 1.0.x</td><td><span class="badge badge-yes">Shipped</span></td></tr>
+          <tr><td>Storage</td><td>PostgreSQL 15+ (append-only, Flyway)</td><td><span class="badge badge-yes">Shipped</span></td></tr>
+          <tr><td>Compliance mapping</td><td>EU AI Act</td><td><span class="badge badge-yes">Shipped</span></td></tr>
+          <tr><td>Signatures</td><td>Ed25519, keys you hold</td><td><span class="badge badge-yes">Shipped</span></td></tr>
+          <tr><td>Other frameworks</td><td>LangChain4j, Python, MCP gateway</td><td><span class="badge badge-no">Planned</span></td></tr>
+          <tr><td>Other standards</td><td>ISO 42001, SOC 2, DPDP</td><td><span class="badge badge-no">Planned</span></td></tr>
+          <tr><td>Streaming capture</td><td><span class="mono">ChatClient.stream()</span>, tool loops</td><td><span class="badge badge-no">Planned</span></td></tr>
+          <tr><td>Post-quantum</td><td>ML-DSA signatures</td><td><span class="badge badge-no">Planned</span></td></tr>
+          <tr><td>Dashboard / ClickHouse</td><td>UI and alternate backend</td><td><span class="badge badge-no">Planned</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="specs">
+      <dl class="spec"><dt>Java</dt><dd>21</dd></dl>
+      <dl class="spec"><dt>Overhead</dt><dd>~20µs / call</dd></dl>
+      <dl class="spec"><dt>License</dt><dd>Apache 2.0</dd></dl>
+      <dl class="spec"><dt>Cost per event</dt><dd>Zero</dd></dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA BAND ============ -->
+<section class="band">
+  <div class="wrap narrow">
+    <h2>Start proving it.</h2>
+    <p class="lede">Tamra is fully open source and self-hosted. There is no account to create,
+    no key to request, and nothing phones home.</p>
+    <div class="btns">
+      <a class="btn btn-primary" href="https://github.com/tamra-dev/tamra-agent-ledger" target="_blank" rel="noopener">Get Tamra on GitHub →</a>
+      <a class="btn btn-ghost" href="#start">See the quickstart</a>
+    </div>
+    <p class="tagline-final">A copper plate for your agent.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <span>Apache 2.0</span>
+    <a href="https://github.com/tamra-dev/tamra-agent-ledger" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://central.sonatype.com/artifact/dev.tamra/tamra-spring-boot-starter" target="_blank" rel="noopener">Maven Central</a>
+    <a href="https://github.com/tamra-dev/tamra-agent-ledger/releases" target="_blank" rel="noopener">Releases</a>
+    <span class="right mono">tamra · तम्र · copper</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('theme-toggle');
+
+    function current() {
+      var set = root.getAttribute('data-theme');
+      if (set) return set;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('tamra-theme', next); } catch (e) {}
+    });
+
+    /* copy buttons lift the text straight out of the <pre> next to them */
+    document.querySelectorAll('.copy').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var pre = b.closest('.code').querySelector('pre');
+        navigator.clipboard.writeText(pre.innerText).then(function () {
+          var was = b.textContent;
+          b.textContent = 'Copied';
+          setTimeout(function () { b.textContent = was; }, 1600);
+        });
+      });
+    });
+  })();
+</script>
 </body>
 </html>
