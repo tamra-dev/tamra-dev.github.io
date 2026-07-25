@@ -684,7 +684,8 @@
 
     <div class="code">
       <div class="code-head"><span>terminal</span><button class="copy" type="button">Copy</button></div>
-      <pre><span class="c-com"># the CLI ships as a signed jar; alias it for readability</span>
+      <pre><span class="c-com"># the CLI ships as a signed jar on the GitHub release — grab it, then alias for readability</span>
+<span class="c-dim">$</span> curl -LO https://github.com/tamra-dev/tamra-agent-ledger/releases/latest/download/tamra.jar
 <span class="c-dim">$</span> alias tamra=<span class="c-str">'java -jar tamra.jar'</span>
 
 <span class="c-com"># 1. generate the signing key you control</span>
@@ -693,7 +694,7 @@
 <span class="c-com"># 2. run your agent as usual — events are captured automatically</span>
 
 <span class="c-com"># 3. export a signed evidence bundle for a date range</span>
-<span class="c-dim">$</span> tamra export --from 2020-01-01 --to 2035-01-01 --edict eu-ai-act \
+<span class="c-dim">$</span> tamra export --from 2026-04-01 --to 2026-07-01 --edict eu-ai-act \
     --out my-evidence.tamrapatra --keystore .tamra/keystore
 <span class="c-ok">✓ Wrote my-evidence.tamrapatra</span>
   <span class="c-dim">events:</span>   500 (sequence 0 to 499)
@@ -771,7 +772,7 @@
     <a href="https://central.sonatype.com/artifact/dev.tamra/tamra-spring-boot-starter" target="_blank" rel="noopener">Maven Central</a>
     <a href="https://github.com/tamra-dev/tamra-agent-ledger/releases" target="_blank" rel="noopener">Releases</a>
     <a href="mailto:satyasivaprasad.j@gmail.com">Contact</a>
-    <span class="right mono">tamra · तम्र · copper</span>
+    <span class="right mono">tamra · ताम्र · copper</span>
   </div>
 </footer>
 
