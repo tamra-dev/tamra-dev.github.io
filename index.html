@@ -501,86 +501,16 @@
         human approved it — and you need that answer to hold up later.</p>
       </div>
     </div>
+
+    <p class="lede" style="margin-top:2rem">The fix isn't better logging — it's a log that
+    can't lie. Here's how Tamra builds one.</p>
   </div>
 </section>
 
-<!-- ============ WHY THE NAME (the bridge) ============ -->
-<section id="why">
-  <div class="wrap">
-    <div class="grid2">
-      <div>
-        <p class="eyebrow">Why it's called Tamra</p>
-        <h2>India solved this problem a thousand years ago.</h2>
-        <p class="lede">When an ancient Indian king granted land, the record wasn't written on
-        palm leaf — it was engraved into <strong>copper plates</strong> called
-        <em>tamrapatras</em> (<span class="mono">tamra</span> = copper, <span class="mono">patra</span> = document).</p>
-        <p class="lede">Copper was chosen for one reason: <strong>you cannot quietly change it.</strong>
-        It doesn't rot, and re-engraving leaves scars anyone can see. Plates were often riveted
-        together under a seal, so no page could be added or removed. If a claim was ever challenged,
-        the holder produced the plate.</p>
-        <p class="lede">A thousand years on — long after the issuing kingdom ceased to exist — those
-        plates are still legible, and still carry the evidence of whether anyone tampered with them.
-        The kingdom's authority expired. The record's didn't.</p>
-        <p class="lede">That's the whole idea behind Tamra: evidence that outlives the trust you
-        placed in whoever produced it. We just swapped the copper for a hash chain.</p>
-
-        <div class="pull">
-          And it's not only a metaphor — the evidence bundle Tamra exports for your auditor
-          is literally a <code>.tamrapatra</code> file.
-        </div>
-      </div>
-
-      <div class="plate-visual">
-        <svg viewBox="0 0 340 240" role="img" aria-label="Left: an engraved copper plate with a rivet and seal. Right: a digital ledger entry with a hash and Ed25519 signature. Both are labelled 'cannot be silently altered'.">
-          <defs>
-            <linearGradient id="cu" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#c87f42" stop-opacity=".30"/>
-              <stop offset="100%" stop-color="#8a4e1f" stop-opacity=".16"/>
-            </linearGradient>
-          </defs>
-          <!-- copper plate -->
-          <g transform="translate(14,26)">
-            <rect width="132" height="150" rx="7" fill="url(#cu)" stroke="var(--chain-stroke)" stroke-width="1.4"/>
-            <circle cx="66" cy="17" r="5.5" fill="none" stroke="var(--chain-stroke)" stroke-width="1.4"/>
-            <g stroke="var(--chain-hash)" stroke-width="1.5" stroke-linecap="round" opacity=".75">
-              <path d="M18 42h96M18 55h96M18 68h72M18 81h96M18 94h58M18 107h96M18 120h80"/>
-            </g>
-            <text x="66" y="146" text-anchor="middle" class="cb-l">c. 1100 CE</text>
-          </g>
-          <text x="80" y="200" text-anchor="middle" class="cb-l">COPPER PLATE</text>
-          <text x="80" y="216" text-anchor="middle" class="cb-p">engraving leaves scars</text>
-
-          <!-- equals -->
-          <g stroke="var(--chain-stroke)" stroke-width="1.6" stroke-linecap="round">
-            <path d="M162 96h16M162 106h16"/>
-          </g>
-
-          <!-- digital entry -->
-          <g transform="translate(194,26)">
-            <rect width="132" height="150" rx="7" fill="var(--chain-fill)" stroke="var(--chain-stroke)" stroke-width="1.4"/>
-            <line x1="0" y1="30" x2="132" y2="30" stroke="var(--chain-stroke)" stroke-width="1" opacity=".55"/>
-            <text x="12" y="20" class="cb-l">SEQ 4476</text>
-            <text x="12" y="50" class="cb-p">prev  c61d07…</text>
-            <text x="12" y="68" class="cb-h">hash  5e93da…</text>
-            <text x="12" y="94" class="cb-p">ed25519 signed</text>
-            <g stroke="var(--chain-stroke)" stroke-width="1.4" fill="none">
-              <rect x="12" y="106" width="108" height="1" opacity=".4"/>
-            </g>
-            <text x="12" y="128" class="cb-h">.tamrapatra</text>
-            <text x="66" y="146" text-anchor="middle" class="cb-l">2026 CE</text>
-          </g>
-          <text x="260" y="200" text-anchor="middle" class="cb-l">HASH CHAIN</text>
-          <text x="260" y="216" text-anchor="middle" class="cb-p">edits break the chain</text>
-        </svg>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ HOW IT WORKS ============ -->
+<!-- ============ HOW TAMRA WORKS ============ -->
 <section id="how">
   <div class="wrap">
-    <p class="eyebrow">How it works</p>
+    <p class="eyebrow">How Tamra works</p>
     <h2>Capture. Seal. Prove.</h2>
     <p class="lede">Three moving parts, and you only ever touch the first one.</p>
 
@@ -654,6 +584,79 @@
   </div>
 </section>
 
+<!-- ============ WHY THE NAME (the copper-plate story) ============ -->
+<section id="why">
+  <div class="wrap">
+    <div class="grid2">
+      <div>
+        <p class="eyebrow">Why it's called Tamra</p>
+        <h2>India solved this problem a thousand years ago.</h2>
+        <p class="lede">When an ancient Indian king granted land, the record wasn't written on
+        palm leaf — it was engraved into <strong>copper plates</strong> called
+        <em>tamrapatras</em> (<span class="mono">tamra</span> = copper, <span class="mono">patra</span> = document).</p>
+        <p class="lede">Copper was chosen for one reason: <strong>you cannot quietly change it.</strong>
+        It doesn't rot, and re-engraving leaves scars anyone can see. Plates were often riveted
+        together under a seal, so no page could be added or removed. If a claim was ever challenged,
+        the holder produced the plate.</p>
+        <p class="lede">A thousand years on — long after the issuing kingdom ceased to exist — those
+        plates are still legible, and still carry the evidence of whether anyone tampered with them.
+        The kingdom's authority expired. The record's didn't.</p>
+        <p class="lede">That's the whole idea behind Tamra: evidence that outlives the trust you
+        placed in whoever produced it. We just swapped the copper for a hash chain.</p>
+
+        <div class="pull">
+          And it's not only a metaphor — the evidence bundle Tamra exports for your auditor
+          is literally a <code>.tamrapatra</code> file.
+        </div>
+      </div>
+
+      <div class="plate-visual">
+        <svg viewBox="0 0 340 240" role="img" aria-label="Left: an engraved copper plate with a rivet and seal. Right: a digital ledger entry with a hash and Ed25519 signature. Both are labelled 'cannot be silently altered'.">
+          <defs>
+            <linearGradient id="cu" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#c87f42" stop-opacity=".30"/>
+              <stop offset="100%" stop-color="#8a4e1f" stop-opacity=".16"/>
+            </linearGradient>
+          </defs>
+          <!-- copper plate -->
+          <g transform="translate(14,26)">
+            <rect width="132" height="150" rx="7" fill="url(#cu)" stroke="var(--chain-stroke)" stroke-width="1.4"/>
+            <circle cx="66" cy="17" r="5.5" fill="none" stroke="var(--chain-stroke)" stroke-width="1.4"/>
+            <g stroke="var(--chain-hash)" stroke-width="1.5" stroke-linecap="round" opacity=".75">
+              <path d="M18 42h96M18 55h96M18 68h72M18 81h96M18 94h58M18 107h96M18 120h80"/>
+            </g>
+            <text x="66" y="146" text-anchor="middle" class="cb-l">c. 1100 CE</text>
+          </g>
+          <text x="80" y="200" text-anchor="middle" class="cb-l">COPPER PLATE</text>
+          <text x="80" y="216" text-anchor="middle" class="cb-p">engraving leaves scars</text>
+
+          <!-- equals -->
+          <g stroke="var(--chain-stroke)" stroke-width="1.6" stroke-linecap="round">
+            <path d="M162 96h16M162 106h16"/>
+          </g>
+
+          <!-- digital entry -->
+          <g transform="translate(194,26)">
+            <rect width="132" height="150" rx="7" fill="var(--chain-fill)" stroke="var(--chain-stroke)" stroke-width="1.4"/>
+            <line x1="0" y1="30" x2="132" y2="30" stroke="var(--chain-stroke)" stroke-width="1" opacity=".55"/>
+            <text x="12" y="20" class="cb-l">SEQ 4476</text>
+            <text x="12" y="50" class="cb-p">prev  c61d07…</text>
+            <text x="12" y="68" class="cb-h">hash  5e93da…</text>
+            <text x="12" y="94" class="cb-p">ed25519 signed</text>
+            <g stroke="var(--chain-stroke)" stroke-width="1.4" fill="none">
+              <rect x="12" y="106" width="108" height="1" opacity=".4"/>
+            </g>
+            <text x="12" y="128" class="cb-h">.tamrapatra</text>
+            <text x="66" y="146" text-anchor="middle" class="cb-l">2026 CE</text>
+          </g>
+          <text x="260" y="200" text-anchor="middle" class="cb-l">HASH CHAIN</text>
+          <text x="260" y="216" text-anchor="middle" class="cb-p">edits break the chain</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ QUICKSTART ============ -->
 <section id="start">
   <div class="wrap narrow">
@@ -694,7 +697,7 @@
 <span class="c-com"># 2. run your agent as usual — events are captured automatically</span>
 
 <span class="c-com"># 3. export a signed evidence bundle for a date range</span>
-<span class="c-dim">$</span> tamra export --from 2026-04-01 --to 2026-07-01 --edict eu-ai-act \
+<span class="c-dim">$</span> tamra export --from 2026-06-01 --to 2026-07-01 --edict eu-ai-act \
     --out my-evidence.tamrapatra --keystore .tamra/keystore
 <span class="c-ok">✓ Wrote my-evidence.tamrapatra</span>
   <span class="c-dim">events:</span>   500 (sequence 0 to 499)
@@ -772,6 +775,7 @@
     <a href="https://central.sonatype.com/artifact/dev.tamra/tamra-spring-boot-starter" target="_blank" rel="noopener">Maven Central</a>
     <a href="https://github.com/tamra-dev/tamra-agent-ledger/releases" target="_blank" rel="noopener">Releases</a>
     <a href="mailto:satyasivaprasad.j@gmail.com">Contact</a>
+    <a href="https://github.com/tamra-dev/tamra-agent-ledger/blob/main/SECURITY.md" target="_blank" rel="noopener">Security</a>
     <span class="right mono">tamra · ताम्र · copper</span>
   </div>
 </footer>
